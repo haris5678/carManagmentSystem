@@ -8,11 +8,14 @@ const carRoutes = require("./src/routes/carRouter");
 const dashboardRoutes = require("./src/routes/dashboardRouter");
 const userRoutes = require("./src/routes/userRouter");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 dotenv.config();
 require("./helper/init_mongodb");
+
+app.use(cors());
 
 app.use(express.json());
 app.use(bodyParser.json());
