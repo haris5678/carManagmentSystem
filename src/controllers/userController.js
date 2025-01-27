@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const bcrypt = require("bcrypt");
 
 const getProfile = async (req, res) => {
   const currentUser = req.user_id;
@@ -19,12 +20,10 @@ const updateProfile = async (req, res) => {
   );
 
   if (!isValidOperation) {
-    return res
-      .status(400)
-      .json({
-        message:
-          "Update not allowed. You can only update your password and last name.",
-      });
+    return res.status(400).json({
+      message:
+        "Update not allowed. You can only update your password and last name.",
+    });
   }
   try {
     const user = await User.findById(currentUser).select("-password");
@@ -55,8 +54,6 @@ const updateProfile = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-
-
 
 module.exports = {
   getProfile,
