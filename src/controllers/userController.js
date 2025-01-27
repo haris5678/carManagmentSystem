@@ -34,11 +34,8 @@ const updateProfile = async (req, res) => {
     const { password, lastName } = req.body;
 
     if (password) {
-      const randomPassword =
-        Math.random().toString(36).substring(2, 10) +
-        ((Math.random() * 1000000000) | 0);
       const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(randomPassword, salt);
+      const hashedPassword = await bcrypt.hash(password, salt);
 
       user.password = hashedPassword;
       await user.save();
