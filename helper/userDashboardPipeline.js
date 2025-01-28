@@ -4,6 +4,7 @@ const getPipeline = (userId) => [
   {
     $match: {
       createdBy: new mongoose.Types.ObjectId(userId),
+      isDeleted: false,
     },
   },
   {
