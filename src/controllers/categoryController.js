@@ -6,12 +6,9 @@ const createCategory = async (req, res) => {
   try {
     const user = await User.findById(currentUser);
     if (user.role !== "admin") {
-      return res
-        .status(404)
-        .json({
-          message:
-            "User not authorized to create category only admin can create",
-        });
+      return res.status(404).json({
+        message: "User not authorized to create category only admin can create",
+      });
     }
     const { name, description } = req.body;
 
@@ -124,10 +121,13 @@ const deleteCategory = async (req, res) => {
         .json({ message: "Unauthorized to delete this category" });
     }
 
-    const deletedCategory = await Category.findOneAndDelete({
-      _id: req.params.id,
-      createdBy: currentUser,
-    });
+    // const deletedCategory = await Category.findOneAndDelete({
+    //   _id: req.params.id,
+    //   createdBy: currentUser,
+    // });
+
+    category.isDeleted = true;
+    const deletedCategory = await category.save();
 
     res.json({
       message: "Category deleted successfully",

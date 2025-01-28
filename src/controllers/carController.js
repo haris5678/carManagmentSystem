@@ -94,13 +94,20 @@ const deleteCar = async (req, res) => {
         .json({ message: "Unauthorized to delete this category" });
     }
 
-    const deletedCar = await Car.findOneAndDelete({
-      _id: req.params.id,
-      createdBy: currentUser,
-    });
+    // const deletedCar = await Car.findOneAndDelete({
+    //   _id: req.params.id,
+    //   createdBy: currentUser,
+    // });
+    car.isDeleted = true;
+    const deletedCar = await car.save();
 
     if (!car) {
-      return res.status(404).json({ message: "Car not found or unauthorized" });
+      return res
+        .status(404)
+        .json({
+          message: "Car not found or unauthorized",
+          deletedCar: deletedCar,
+        });
     }
 
     res.json({ message: "Car deleted successfully", car: deletedCar });
