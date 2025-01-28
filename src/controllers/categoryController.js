@@ -35,12 +35,12 @@ const createCategory = async (req, res) => {
 const getAllCategories = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
-    const categories = await Category.find()
+    const categories = await Category.find({isDeleted: false})
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .populate({ path: "createdBy", select: "email firstName" });
 
-    const total = await Category.countDocuments();
+    const total = await Category.countDocuments({isDeleted: false});
 
     res.json({
       message: "Categories fetched successfully",
