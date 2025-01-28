@@ -51,7 +51,6 @@ const validateSignup = (req, res, next) => {
 const validateCategory = (req, res, next) => {
   const schema = Joi.object({
     name: Joi.string().min(3).required(),
-    description: Joi.string().min(6),
   });
 
   const { error } = schema.validate(req.body);
