@@ -52,7 +52,44 @@ const getAllCars = async (req, res) => {
   try {
     const { page = 1, limit = 10, make, model, category, year } = req.query;
 
-    const query = {};
+    const query = {
+      isDeleted: false,
+    };
+
+    if (category) query.category = { $regex: new RegExp(category, "i") };
+    if (make) query.make = { $regex: new RegExp(make, "i") };
+    if (model) query.model = { $regex: new RegExp(model, "i") };
+    if (year) query.yearOfManufacture = parseInt(year);
+
+    console.log(query);
+
+    const cars = await Car.find(query)
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .populate("category", "name")
+      .populate({ path: "createdBy", select: "email firstName phone_no" });
+
+    const total = await Car.countDocuments(query);
+
+    res.json({
+      cars,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Fetch cars error", error: error.message });
+  }
+};
+
+const getAllUsersCars = async (req, res) => {
+  const currentUser = req.user_id;
+  try {
+    const { page = 1, limit = 10, make, model, category, year } = req.query;
+
+    const query = {
+      createdBy: currentUser,
+      isDeleted: false,
+    };
 
     if (category) query.category = { $regex: new RegExp(category, "i") };
     if (make) query.make = { $regex: new RegExp(make, "i") };
@@ -102,12 +139,10 @@ const deleteCar = async (req, res) => {
     const deletedCar = await car.save();
 
     if (!car) {
-      return res
-        .status(404)
-        .json({
-          message: "Car not found or unauthorized",
-          deletedCar: deletedCar,
-        });
+      return res.status(404).json({
+        message: "Car not found or unauthorized",
+        deletedCar: deletedCar,
+      });
     }
 
     res.json({ message: "Car deleted successfully", car: deletedCar });
@@ -129,7 +164,7 @@ const updateCar = async (req, res) => {
       return res.status(404).json({ message: "Car not found" });
     }
 
-    if (isCar.createdBy.toString() !== req.user.toString()) {
+    if (isCar.createdBy.toString() !== currentUser) {
       return res
         .status(403)
         .json({ message: "Unauthorized to update this car" });
@@ -154,4 +189,11 @@ const updateCar = async (req, res) => {
   }
 };
 
-module.exports = { addCar, getCarById, getAllCars, deleteCar, updateCar };
+module.exports = {
+  addCar,
+  getCarById,
+  getAllCars,
+  getAllUsersCars,
+  deleteCar,
+  updateCar,
+};

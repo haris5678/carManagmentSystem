@@ -17,6 +17,12 @@ router.get(
     carController.getAllCars
   );
 
+  router.get(
+    "/get-all-users-cars",
+    verifyAuthToken(),
+    carController.getAllUsersCars
+  );
+
 
   router.get(
     "/get-car-by-Id/:id",
