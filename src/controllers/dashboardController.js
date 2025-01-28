@@ -7,15 +7,12 @@ const getPipeline = require("../../helper/userDashboardPipeline");
 const getAdminDashboard = async (req, res) => {
   const currentUser = req.user_id;
   try {
-    const user = await User.findById({
-      _id: currentUser,
-      isDeleted: false,
-    }).select("-password");
+    const user = await User.findById(currentUser).select("-password");
     if (user.role !== "admin" || !user) {
       return res.status(404).json({ message: "admin not found" });
     }
-    const totalCars = await Car.countDocuments();
-    const totalCategories = await Category.countDocuments();
+    const totalCars = await Car.countDocuments({ isDeleted: false });
+    const totalCategories = await Category.countDocuments({ isDeleted: false });
     const totalUsers = await User.countDocuments();
 
     res.json({
